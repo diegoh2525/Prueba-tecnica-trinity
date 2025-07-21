@@ -4,14 +4,15 @@ import lombok.*;
 
 import java.time.LocalDate;
 
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClienteRequest {
-    private String tipoIdentificacion;
-    private String numeroIdentificacion;
+    private String tipoId;
+    private String numeroId;
     private String nombres;
     private String apellidos;
-    private String correoElectronico;
+    private String correo;
     private LocalDate fechaNacimiento;
 }

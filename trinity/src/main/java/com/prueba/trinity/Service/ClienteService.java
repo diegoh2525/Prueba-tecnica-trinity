@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,7 +25,7 @@ public class ClienteService {
             throw new IllegalArgumentException("El cliente no puede ser menor de edad");
         }
 
-        if (clienteRepository.existsByNumeroIdentificacion(dto.getNumeroIdentificacion())) {
+        if (clienteRepository.existsByNumeroId(dto.getNumeroId())) {
             throw new IllegalArgumentException("Ya existe un cliente con ese número de identificación");
         }
 
@@ -37,7 +38,13 @@ public class ClienteService {
         Cliente cliente = clienteRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado"));
 
-        ClienteMapper.updateEntity(cliente, dto);
+        cliente.setTipoId(dto.getTipoId());
+        cliente.setNumeroId(dto.getNumeroId());
+        cliente.setNombres(dto.getNombres());
+        cliente.setApellidos(dto.getApellidos());
+        cliente.setCorreo(dto.getCorreo());
+        cliente.setFechaModificacion(LocalDateTime.now());
+
         Cliente actualizado = clienteRepository.save(cliente);
         return ClienteMapper.toResponseDTO(actualizado);
     }

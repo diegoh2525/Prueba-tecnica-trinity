@@ -5,10 +5,12 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "clientes")
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -19,11 +21,11 @@ public class Cliente {
     private Long id;
 
     @NotBlank
-    private String tipoIdentificacion;
+    private String tipoId;
 
     @NotBlank
     @Column(unique = true)
-    private String numeroIdentificacion;
+    private String numeroId;
 
     @NotBlank
     @Size(min = 2)
@@ -35,12 +37,12 @@ public class Cliente {
 
     @Email
     @NotBlank
-    private String correoElectronico;
+    private String correo;
 
     @Past
     private LocalDate fechaNacimiento;
 
-    private LocalDate fechaCreacion;
+    private LocalDateTime fechaCreacion;
 
-    private LocalDate fechaModificacion;
+    private LocalDateTime fechaModificacion;
 }
