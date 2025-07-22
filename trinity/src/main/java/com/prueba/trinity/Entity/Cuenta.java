@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "cuentas")
@@ -40,4 +41,10 @@ public class Cuenta {
     @ManyToOne
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
+
+    @OneToMany(mappedBy = "cuentaOrigen")
+    private List<Transaccion> transaccionesOrigen;
+
+    @OneToMany(mappedBy = "cuentaDestino")
+    private List<Transaccion> transaccionesDestino;
 }
