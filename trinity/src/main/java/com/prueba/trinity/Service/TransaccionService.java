@@ -63,12 +63,10 @@ public class TransaccionService {
                     throw new IllegalArgumentException("Saldo insuficiente para transferencia");
                 }
 
-                // Débito
                 cuentaOrigen.setSaldo(cuentaOrigen.getSaldo() - monto);
                 cuentaRepository.save(cuentaOrigen);
                 transaccionRepository.save(transaccion);
 
-                // Crédito (nueva transacción espejo)
                 Transaccion transaccionDestino = new Transaccion();
                 transaccionDestino.setFecha(LocalDateTime.now());
                 transaccionDestino.setTipo(TipoTransaccion.CONSIGNACION);

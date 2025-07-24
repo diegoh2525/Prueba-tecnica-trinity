@@ -4,6 +4,7 @@ import com.prueba.trinity.Dto.Request.ClienteRequest;
 import com.prueba.trinity.Dto.Response.ClienteResponse;
 import com.prueba.trinity.Service.ClienteService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,8 @@ public class ClienteController {
 
     @PostMapping
     public ResponseEntity<ClienteResponse> crear(@RequestBody ClienteRequest dto) {
-        return ResponseEntity.ok(clienteService.crearCliente(dto));
+        ClienteResponse response = clienteService.crearCliente(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/{id}")

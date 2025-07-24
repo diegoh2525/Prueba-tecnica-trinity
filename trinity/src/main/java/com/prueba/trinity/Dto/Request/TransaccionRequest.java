@@ -24,5 +24,5 @@ public class TransaccionRequest {
     @NotNull
     private Long cuentaOrigenId;
 
-    private Long cuentaDestinoId; // solo si es TRANSFERENCIA
+    private Long cuentaDestinoId; // solo en trnsferencias
 }
