@@ -29,8 +29,8 @@ public class ControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    void flujoCompletoController() throws Exception {
-        // Crear cliente 1
+    void flujoCompletoNormalController() throws Exception {
+        // crear cliente 1
         ClienteRequest cliente1 = new ClienteRequest();
         cliente1.setTipoId("CC");
         cliente1.setNumeroId("1003951905");
@@ -46,7 +46,7 @@ public class ControllerTest {
                 .andReturn().getResponse().getContentAsString();
         Long cliente1Id = objectMapper.readTree(cliente1Response).get("id").asLong();
 
-        // Crear cliente 2
+        // crear cliente 2
         ClienteRequest cliente2 = new ClienteRequest();
         cliente2.setTipoId("CC");
         cliente2.setNumeroId("1080951905");
@@ -62,7 +62,7 @@ public class ControllerTest {
                 .andReturn().getResponse().getContentAsString();
         Long cliente2Id = objectMapper.readTree(cliente2Response).get("id").asLong();
 
-        // Crear cuenta para cliente 1
+        // crear cuenta para cliente 1
         CuentaRequest cuenta1 = new CuentaRequest();
         cuenta1.setTipoCuenta(TipoCuenta.AHORRO);
         cuenta1.setSaldoInicial(10000.0);
@@ -76,7 +76,7 @@ public class ControllerTest {
                 .andReturn().getResponse().getContentAsString();
         Long cuenta1Id = objectMapper.readTree(cuenta1Response).get("id").asLong();
 
-        // Crear cuenta para cliente 2
+        // crear cuenta para cliente 2
         CuentaRequest cuenta2 = new CuentaRequest();
         cuenta2.setTipoCuenta(TipoCuenta.CORRIENTE);
         cuenta2.setSaldoInicial(10000.0);
@@ -90,7 +90,7 @@ public class ControllerTest {
                 .andReturn().getResponse().getContentAsString();
         Long cuenta2Id = objectMapper.readTree(cuenta2Response).get("id").asLong();
 
-        // Transferencia entre cuentas
+        // transferencia entre cuentas
         TransaccionRequest transferencia = new TransaccionRequest();
         transferencia.setTipo(TipoTransaccion.TRANSFERENCIA);
         transferencia.setMonto(5000.0);
@@ -102,5 +102,67 @@ public class ControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(transferencia)))
                 .andExpect(status().isCreated());
+    }
+
+    // pruebas negativas
+    @Test
+    void crearClienteMenor() throws Exception {
+        ClienteRequest cliente = new ClienteRequest();
+        cliente.setTipoId("CC");
+        cliente.setNumeroId("123456789");
+        cliente.setNombres("Juan");
+        cliente.setApellidos("Casta");
+        cliente.setCorreo("juan@mail.com");
+        cliente.setFechaNacimiento(LocalDate.now().minusYears(15));
+
+        mockMvc.perform(post("/api/clientes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(cliente)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void crearClienteCorreoInvalido() throws Exception {
+        ClienteRequest cliente = new ClienteRequest();
+        cliente.setTipoId("CC");
+        cliente.setNumeroId("123456789");
+        cliente.setNombres("Pedro");
+        cliente.setApellidos("Porro");
+        cliente.setCorreo("addasdasads");
+        cliente.setFechaNacimiento(LocalDate.of(1990, 1, 1));
+
+        mockMvc.perform(post("/api/clientes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(cliente)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void crearCuentaSaldoNegativo() throws Exception {
+        ClienteRequest cliente = new ClienteRequest();
+        cliente.setTipoId("CC");
+        cliente.setNumeroId("987654321");
+        cliente.setNombres("Ana");
+        cliente.setApellidos("Perez");
+        cliente.setCorreo("ana@mail.com");
+        cliente.setFechaNacimiento(LocalDate.of(1990, 1, 1));
+
+        String clienteResponse = mockMvc.perform(post("/api/clientes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(cliente)))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        Long clienteId = objectMapper.readTree(clienteResponse).get("id").asLong();
+
+        CuentaRequest cuenta = new CuentaRequest();
+        cuenta.setTipoCuenta(TipoCuenta.AHORRO);
+        cuenta.setSaldoInicial(-1000.0);
+        cuenta.setExentaGmf(false);
+        cuenta.setClienteId(clienteId);
+
+        mockMvc.perform(post("/api/cuentas")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(cuenta)))
+                .andExpect(status().isBadRequest());
     }
 }
